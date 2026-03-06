@@ -20,6 +20,9 @@ export async function POST(req: NextRequest) {
       await supabase.from("garments").select("name").eq("id", garment_id).single()
     }
 
+    console.log("FAL_KEY set:", !!process.env.FAL_KEY)
+    console.log("person_image_url:", person_image_url?.substring(0, 60))
+
     const result_image_url = await runFashnTryOn({
       person_image_url,
       garment_image_url,
