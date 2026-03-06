@@ -1,10 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { Shirt, Heart, ShoppingCart, LogOut, Sparkles, Settings } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { Shirt, Heart, ShoppingCart, Sparkles, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { createClient } from "@/lib/supabase"
 import { cn } from "@/lib/utils"
 
 const navLinks = [
@@ -17,14 +16,6 @@ const navLinks = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const router = useRouter()
-
-  async function handleLogout() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push("/login")
-    router.refresh()
-  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm">
@@ -40,10 +31,7 @@ export function Navbar() {
               <Button
                 variant={pathname === href ? "secondary" : "ghost"}
                 size="sm"
-                className={cn(
-                  "gap-2",
-                  pathname === href && "text-primary font-semibold"
-                )}
+                className={cn("gap-2", pathname === href && "text-primary font-semibold")}
               >
                 <Icon className="h-4 w-4" />
                 {label}
@@ -51,20 +39,10 @@ export function Navbar() {
             </Link>
           ))}
         </nav>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          className="gap-2 text-muted-foreground hover:text-destructive"
-        >
-          <LogOut className="h-4 w-4" />
-          <span className="hidden sm:inline">Sair</span>
-        </Button>
       </div>
 
-      {/* Mobile nav */}
-      <nav className="flex border-t md:hidden">
+      {/* Mobile nav — bottom bar */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t bg-white/90 backdrop-blur-sm md:hidden">
         {navLinks.map(({ href, label, icon: Icon }) => (
           <Link key={href} href={href} className="flex-1">
             <div
