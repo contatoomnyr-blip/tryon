@@ -8,7 +8,7 @@ export interface FashnTryOnInput {
 
 // Agente especializado: aplica UMA peça de roupa na pessoa
 async function fashnAgent(input: FashnTryOnInput): Promise<string> {
-  fal.config({ credentials: process.env.FAL_KEY })
+  fal.config({ credentials: process.env['FAL_KEY'] })
   const result = await fal.subscribe("fal-ai/fashn/tryon/v1.5", {
     input: {
       model_image: input.person_image_url,
@@ -30,7 +30,7 @@ async function fashnAgent(input: FashnTryOnInput): Promise<string> {
 
 // Agente upscale: aumenta resolução 4x com Real-ESRGAN
 async function upscaleAgent(imageUrl: string): Promise<string> {
-  fal.config({ credentials: process.env.FAL_KEY })
+  fal.config({ credentials: process.env['FAL_KEY'] })
   const result = await fal.subscribe("fal-ai/esrgan", {
     input: {
       image_url: imageUrl,
@@ -49,7 +49,7 @@ async function upscaleAgent(imageUrl: string): Promise<string> {
 
 // Agente rosto: restaura e preserva detalhes faciais com CodeFormer
 async function faceRestoreAgent(imageUrl: string): Promise<string> {
-  fal.config({ credentials: process.env.FAL_KEY })
+  fal.config({ credentials: process.env['FAL_KEY'] })
   const result = await fal.subscribe("fal-ai/codeformer", {
     input: {
       image_url: imageUrl,
