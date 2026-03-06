@@ -5,12 +5,11 @@ import { useDropzone } from "react-dropzone"
 import { Upload, User } from "lucide-react"
 import { toast } from "sonner"
 import { ImagePreview } from "@/components/shared/ImagePreview"
-import { compressImage } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 
 interface PhotoUploaderProps {
   imageUrl: string | null
-  onImageSelected: (file: File, previewUrl: string) => void
+  onImageSelected: (file: File) => void
   onImageRemoved: () => void
   fillHeight?: boolean
 }
@@ -34,8 +33,7 @@ export function PhotoUploader({
       }
 
       try {
-        const compressed = await compressImage(file)
-        onImageSelected(file, compressed)
+        onImageSelected(file)
       } catch {
         toast.error("Erro ao processar imagem. Tente outro arquivo.")
       }

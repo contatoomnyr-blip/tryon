@@ -10,8 +10,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner"
 import { CatalogFilter, CatalogGrid } from "@/components/catalog/CatalogGrid"
 import { useGarments } from "./GarmentSelector"
 import { useTryOn } from "@/hooks/useTryOn"
-import { createClient } from "@/lib/supabase"
-import { dataURLtoBlob } from "@/lib/utils"
+import { compressImage } from "@/lib/utils"
 import type { GarmentCategory } from "@/types"
 
 export function TryOnContainer() {
@@ -31,21 +30,21 @@ export function TryOnContainer() {
     resetResult,
   } = useTryOn()
 
-  async function handlePersonImageSelected(file: File, previewUrl: string) {
+  async function handlePersonImageSelected(file: File) {
     try {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      const blob = dataURLtoBlob(previewUrl)
-      const fileName = `person/${user?.id ?? "guest"}/${Date.now()}.jpg`
-      const { error: uploadError } = await supabase.storage
-        .from("try-on-images")
-        .upload(fileName, blob, { upsert: true, contentType: "image/jpeg" })
-      if (uploadError) throw uploadError
-      const { data: { publicUrl } } = supabase.storage
-        .from("try-on-images").getPublicUrl(fileName)
-      setPersonImage(file, publicUrl)
+      const base64 = await compressImage(file)
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image_base64: base64, mime_type: file.type }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setPersonImage(file, data.public_url)
     } catch {
-      setPersonImage(file, previewUrl)
+      // fallback: usa base64 local (FASHN pode rejeitar, mas melhor que nada)
+      const base64 = await compressImage(file)
+      setPersonImage(file, base64)
     }
   }
 
